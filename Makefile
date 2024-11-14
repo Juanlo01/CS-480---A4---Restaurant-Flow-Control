@@ -4,7 +4,7 @@
 # Makefile
 
 # Specify compiler
-CC = gcc -pthread
+CC = gcc -pthread -std=gnu99
 
 # Compiler flags
 CFLAGS = -g3 -c 
