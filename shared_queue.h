@@ -27,10 +27,13 @@ int vipCap;
 
 int ggTime;
 
+// Inserts requests into queue
 void enqueue(int request);
 
+// Removes requests from queue
 void dequeue();
 
+// Prints the queue (For testing)
 void printQueue();
 
 

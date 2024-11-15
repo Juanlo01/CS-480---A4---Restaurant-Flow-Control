@@ -9,15 +9,18 @@
 #include "consumer.h"
 #include "log.h"
 
+#define MAX_QUEUE 18 // Max size of queue
 
-#define MAX_QUEUE 18
-
+// Shared Buffer
 unsigned int sharedQ[MAX_QUEUE];
 
+// Tracks Requests produced
 unsigned int producedLog[2] = {0, 0};
 
+// Tracks Requests consumed
 unsigned int consumedLog[2] = {0, 0};
 
+// Tracks Requests in queue
 unsigned int inRequestQueue[2] = {0, 0};
 
 // Current size of the queue
@@ -42,7 +45,7 @@ int r9ZZZ = 0; // time r9 sleeps
 int ggTime = 0; // time general table requests take
 int vipTime = 0; // time vip table requests take
 
-unsigned int extern vipCount;
+unsigned int extern vipCount; // # of vip requests in queue
 
 //unsigned int produced[seatRqsts];
 
@@ -63,7 +66,7 @@ void enqueue(int request){//, unsigned int produce[]){
     pthread_mutex_lock(&mutex); // Grab lock
 
     // Wait if buffer is full
-    if (queueSize == MAX_QUEUE){
+    while (queueSize == MAX_QUEUE){
         pthread_cond_wait(&cond, &mutex);
     }
 
@@ -102,22 +105,23 @@ void enqueue(int request){//, unsigned int produce[]){
 
     // Queue will no longer be empty so consumer is woken up
     if (isEmpty){
-        pthread_cond_signal(&cond);
+        pthread_cond_broadcast(&cond);
     }
     
     pthread_mutex_unlock(&mutex); // Release the lock
 
 }
 
+// Removes requests from queue
 void dequeue(){
     bool isFull = false; // Is buffer at capacity?
     pthread_mutex_lock(&mutex); // Grab lock
-    while (queueSize == 0){ // Sleep if buffer is empty, until signaled
+    while (queueSize == 0 && consumed < totalRqsts){ // Sleep if buffer is empty, until signaled
         pthread_cond_wait(&cond, &mutex);
     }
     // If full, there will be one space in the buffer afte we remove
     if (queueSize == MAX_QUEUE){
-        isFull == true;
+        isFull = true;
     }
     // Keep track of VIP requests
     // if (sharedQ[count - 1] == 1){
@@ -126,7 +130,7 @@ void dequeue(){
     // }
         // Grab the request to be removed (FIFO)
 
-    sharedQ[0] = toConsume;
+    toConsume = sharedQ[0];
 
     printf("Queue Size: %d", queueSize);
 
@@ -137,15 +141,13 @@ void dequeue(){
     sharedQ[i] = sharedQ[i + 1];
     }
 
-    queueSize--;
-    queueCount--;
-    consumed++;
-
     printQueue();
 
     //printf("Removed an item fam");
 
-        
+        queueSize--;
+        queueCount--;
+        consumed++;
         
         if (toConsume == 0){
              producedLog[0]--;
@@ -156,15 +158,16 @@ void dequeue(){
         
     // Queue will no longer be full so producer is woken up
     if (isFull){
-        pthread_cond_signal(&cond);
+        pthread_cond_broadcast(&cond);
     }
 
     pthread_mutex_unlock(&mutex); // Release the lock
 
 }
 
+// Prints the queue (For testing)
 void printQueue(){
-    for (int i = 0; i < queueCount + 1; i++){
+    for (int i = 0; i < queueCount; i++){
         
         printf("%d", sharedQ[i]);
     }
