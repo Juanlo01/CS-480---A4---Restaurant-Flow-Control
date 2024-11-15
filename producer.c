@@ -61,13 +61,13 @@ void *Producer(void *arg){
 
     // General thread is done
     if (request == 0){
-        printf("General Producer Thread is finished\n");
+        //printf("General Producer Thread is finished\n");
         pthread_exit(0);
     }
 
     // VIP thread is done
     if (request == 1){
-        printf("VIP Producer Thread is finished\n");
+        //printf("VIP Producer Thread is finished\n");
         pthread_exit(0);
     }
 

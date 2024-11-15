@@ -32,8 +32,8 @@ int main(int argc, char *argv[]){
 
     int ggRequest = 0;
     int vipRequest = 1;
-    int txID = 2;
-    int r9ID = 3;
+    int txID = 0;
+    int r9ID = 1;
 
     while ((opt = getopt(argc, argv, "s:x:r:g:v:")) != -1 ){
         switch (opt){

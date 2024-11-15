@@ -7,6 +7,9 @@
 // Consumes Seating Table Requests (General and VIP)
 void *Consumer(void *arg);
 
+unsigned int extern consumedLog[2];
+unsigned int extern producedLog[2];
+
 // Refer to consumer.c
 int extern sharedCount;
 

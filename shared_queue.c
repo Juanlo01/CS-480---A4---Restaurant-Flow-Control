@@ -113,12 +113,15 @@ void enqueue(int request){//, unsigned int produce[]){
 }
 
 // Removes requests from queue
-void dequeue(){
+void dequeue(int consumer){
     bool isFull = false; // Is buffer at capacity?
     pthread_mutex_lock(&mutex); // Grab lock
     while (queueSize == 0 && consumed < totalRqsts){ // Sleep if buffer is empty, until signaled
         pthread_cond_wait(&cond, &mutex);
     }
+
+    
+
     // If full, there will be one space in the buffer afte we remove
     if (queueSize == MAX_QUEUE){
         isFull = true;
@@ -132,7 +135,7 @@ void dequeue(){
 
     toConsume = sharedQ[0];
 
-    printf("Queue Size: %d", queueSize);
+    //printf("Queue Size: %d", queueSize);
 
     //printf("Finna remove an item");
 
@@ -141,20 +144,28 @@ void dequeue(){
     sharedQ[i] = sharedQ[i + 1];
     }
 
-    printQueue();
+    //printQueue();
 
     //printf("Removed an item fam");
 
+    
+    if (consumed <= totalRqsts){
         queueSize--;
         queueCount--;
         consumed++;
+    }
+    
         
         if (toConsume == 0){
-             producedLog[0]--;
+            consumedLog[0]++;
+            inRequestQueue[0]--;
              
         } else if (toConsume == 1){
-             producedLog[1]--;
+            consumedLog[1]++;
+             inRequestQueue[1]--;
         }
+
+        output_request_removed(consumer, toConsume, consumedLog, inRequestQueue);
         
     // Queue will no longer be full so producer is woken up
     if (isFull){
