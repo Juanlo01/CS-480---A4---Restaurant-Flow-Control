@@ -42,9 +42,10 @@ unsigned int extern vipCount;
 
 //unsigned int produced[seatRqsts];
 
-
+// Lock
 pthread_mutex_t mutex;
-pthread_mutex_t condition_mutex;
+
+// Wait Condition
 pthread_cond_t condition_cond;
 
 //sem_t semaphore;
@@ -59,7 +60,7 @@ void enqueue(int request){//, unsigned int produce[]){
 
     // Wait if buffer is full
     if (queueSize == MAX_QUEUE){
-        pthread_cond_wait(&condition_cond, &condition_mutex);
+        pthread_cond_wait(&condition_cond, &mutex);
     }
 
     // Only item in buffer
@@ -81,7 +82,7 @@ void enqueue(int request){//, unsigned int produce[]){
         }
 
 
-        //output_request_added(request, produced, inRequestQueue);
+        output_request_added(request, produced, inRequestQueue);
 
         seatRqsts--;
         
@@ -107,7 +108,7 @@ void dequeue(){
     pthread_mutex_lock(&mutex); // Grab lock
 
     while (queueSize == 0){ // Sleep until signaled
-        pthread_cond_wait(&condition_cond, &condition_mutex);
+        pthread_cond_wait(&condition_cond, &mutex);
     }
 
     // If full, there will be one space in the buffer afte we remove

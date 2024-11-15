@@ -4,19 +4,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Produces Seating Table Requests (General or VIP)
+void *Producer(void *arg);
+
+// Request type (General or VIP)
 int request;
 
-unsigned int vipCount;
-
-int extern vipCap;
-
-int extern ggTime;
-int extern vipTime;
-int extern sharedCount;
+// Amount of remaining seat requests
 int extern seatRqsts;
 
-void *generalProducer();
+// Imma be real, idk what this counts as of now 1:22 A.M. 11/15/2024
+int extern sharedCount;
 
-void *vipProducer();
+// General Request Wait Time (If Applicable)
+int extern ggTime;
+
+// VIP Request Wait Time (If Applicable)
+int extern vipTime;
 
 #endif

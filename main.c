@@ -26,7 +26,10 @@ int main(int argc, char *argv[]){
     extern int seatRqsts;
     extern int ggTime;
 
-    
+    int ggRequest = 0;
+    int vipRequest = 1;
+    int txID = 2;
+    int r9ID = 3;
 
     while ((opt = getopt(argc, argv, "s:x:r:g:v:")) != -1 ){
         switch (opt){
@@ -82,17 +85,26 @@ int main(int argc, char *argv[]){
     
     }
 
-    pthread_create(&producer1, NULL, generalProducer, NULL); // VIP Greeter Robot
-    //usleep(1000);
-    pthread_create(&producer2, NULL, vipProducer, NULL); // General Greeter Robot
+    // General Producer
+    pthread_create(&producer1, NULL, Producer, &ggRequest); // VIP Greeter Robot
+
+    // VIP Producer
+    pthread_create(&producer2, NULL, Producer, &vipRequest); // General Greeter Robot
+
     //usleep(1000); // Busy Waiting *PLACEHOLDER FOR SEMAPHORES*
-    pthread_create(&consumer1, NULL, TEGGS, NULL); // T-X Consumer Robot
-    //usleep(1000);
-    pthread_create(&consumer2, NULL, R9, NULL); // Rev-9 Consumer Robot
+    //pthread_create(&consumer1, NULL, Consumer, &txID); // T-X Consumer Robot
+    //pthread_create(&consumer2, NULL, Consumer, &r9ID); // Rev-9 Consumer Robot
     
-    // pthread_join(producer1, NULL);
-    // pthread_join(producer2, NULL);
+    // General Producer join
+    pthread_join(producer1, NULL);
+
+    // VIP Producer join
+    pthread_join(producer2, NULL);
+
+    // T-X Consumer join
     // pthread_join(consumer1, NULL);
+
+    // Rev-9 Consumer join
     // pthread_join(consumer2, NULL);
     
     return 0;
