@@ -4,7 +4,6 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <unistd.h>
-#include <stdatomic.h>
 #include "shared_queue.h"
 #include "producer.h"
 #include "consumer.h"
