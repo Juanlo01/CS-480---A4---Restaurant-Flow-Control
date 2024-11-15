@@ -11,7 +11,7 @@ void *Consumer(void *arg);
 int extern sharedCount;
 
 // Amount of remaining seat requests
-int extern seatRqsts;
+int extern totalRqsts;
 
 // Amount of time it takes r9 to consume (After dequeueing)
 int extern r9ZZZ;

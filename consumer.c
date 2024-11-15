@@ -12,11 +12,11 @@ void *Consumer(void *arg){
     int *RID = (int *)arg; // cast void* to int*
     int robot = *RID; // Dereference into int
 
-    // Refer to consumer.c
-    int extern sharedCount;
+    // Keeps track of requests consumed
+    int extern consumed;
 
     // Amount of remaining seat requests
-    int extern seatRqsts;
+    int extern totalRqsts;
 
     // Amount of time it takes r9 to consume (After dequeueing)
     int extern r9ZZZ;
@@ -27,6 +27,10 @@ void *Consumer(void *arg){
     
     //printf("TX sleep time is: %d\n", txZZZ);
         
+    printf("Total Requests: %d\n",totalRqsts);
+
+    while (consumed < totalRqsts){
+        printf("Consumed %d\n", consumed);
         // Is the consumer TX?
         if (robot == 2){
             if (txZZZ > 0){
@@ -48,6 +52,9 @@ void *Consumer(void *arg){
                 dequeue();
             }
         }
+    }
+
+        
             
     // Lets us know a consumer thread is completed
 

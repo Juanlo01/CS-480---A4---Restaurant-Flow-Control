@@ -3,24 +3,21 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
-#include <semaphore.h>
-#include <unistd.h>
 
 #define MAX_QUEUE 18
 
 
 pthread_mutex_t mutex;
-pthread_mutex_t condition_mutex;
-pthread_cond_t condition_cond;
+pthread_cond_t cond;
 
 
 unsigned int sharedQ[MAX_QUEUE];
-unsigned int produced[2];
-unsigned int consumed[2];
+unsigned int producedLog[2];
+unsigned int consumedLog[2];
 unsigned int inRequestQueue[2];
 
 int sharedCount;
+int totalRqsts;
 int seatRqsts;
 int count;
 

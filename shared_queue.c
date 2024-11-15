@@ -14,20 +14,25 @@
 
 unsigned int sharedQ[MAX_QUEUE];
 
-unsigned int produced[2] = {0, 0};
+unsigned int producedLog[2] = {0, 0};
 
-unsigned int consumed[2] = {0, 0};
+unsigned int consumedLog[2] = {0, 0};
 
 unsigned int inRequestQueue[2] = {0, 0};
 
-// size of the queue
+// Current size of the queue
 int queueSize = 0;
 
 // total seating requests
+int totalRqsts = 120;
+
+// current seating requests
 int seatRqsts = 120;
 
-// total requests sent
-int sharedCount = 0;
+// total requests consumed
+int consumed = 0;
+
+int toConsume = 0;
 
 // current count of the queue
 int queueCount = 0;
@@ -45,11 +50,11 @@ unsigned int extern vipCount;
 pthread_mutex_t mutex;
 
 // Wait Condition
-pthread_cond_t condition_cond;
+pthread_cond_t cond;
 
 //sem_t semaphore;
 
-
+// Inserts requests into queue
 void enqueue(int request){//, unsigned int produce[]){
     
 
@@ -59,7 +64,7 @@ void enqueue(int request){//, unsigned int produce[]){
 
     // Wait if buffer is full
     if (queueSize == MAX_QUEUE){
-        pthread_cond_wait(&condition_cond, &mutex);
+        pthread_cond_wait(&cond, &mutex);
     }
 
     // Only item in buffer
@@ -72,17 +77,24 @@ void enqueue(int request){//, unsigned int produce[]){
         sharedQ[queueCount] = request;
         queueCount++;
 
+        // printQueue();
+
+        // Keeps track of how many current items in queue (MAX of 18)
+        queueSize++;
+
+        // Updates Log
         if (request == 0){
-             produced[0]++;
+             producedLog[0]++;
              inRequestQueue[0]++;
         } else if (request == 1){
-             produced[1]++;
+             producedLog[1]++;
              inRequestQueue[1]++;
         }
 
 
-        output_request_added(request, produced, inRequestQueue);
+        output_request_added(request, producedLog, inRequestQueue);
 
+        // One less seating request
         seatRqsts--;
         
         //printf("%d\n", seatRqsts); // Seat requests countdown tracker
@@ -90,7 +102,7 @@ void enqueue(int request){//, unsigned int produce[]){
 
     // Queue will no longer be empty so consumer is woken up
     if (isEmpty){
-        pthread_cond_signal(&condition_cond);
+        pthread_cond_signal(&cond);
     }
     
     pthread_mutex_unlock(&mutex); // Release the lock
@@ -98,64 +110,53 @@ void enqueue(int request){//, unsigned int produce[]){
 }
 
 void dequeue(){
-
-    sharedCount++;
-    printf("bruh\n");
-
     bool isFull = false; // Is buffer at capacity?
-
     pthread_mutex_lock(&mutex); // Grab lock
-
-    while (queueSize == 0){ // Sleep until signaled
-        pthread_cond_wait(&condition_cond, &mutex);
+    while (queueSize == 0){ // Sleep if buffer is empty, until signaled
+        pthread_cond_wait(&cond, &mutex);
     }
-
     // If full, there will be one space in the buffer afte we remove
     if (queueSize == MAX_QUEUE){
         isFull == true;
     }
-
     // Keep track of VIP requests
     // if (sharedQ[count - 1] == 1){
     //     vipCap++; // VIP spot opened up
     //     printf("%d", vipCap);
     // }
-
-
-   
-
-    
-
-    
-    
-
         // Grab the request to be removed (FIFO)
-        sharedQ[0] = request;
+
+    sharedQ[0] = toConsume;
+
+    printf("Queue Size: %d", queueSize);
+
+    //printf("Finna remove an item");
+
+    // Remove item
+    for (int i = 0; i < queueCount - 1; i++){
+    sharedQ[i] = sharedQ[i + 1];
+    }
+
+    queueSize--;
+    queueCount--;
+    consumed++;
+
+    printQueue();
+
+    //printf("Removed an item fam");
+
         
-        if (request == 0){
-             produced[0]--;
+        
+        if (toConsume == 0){
+             producedLog[0]--;
              
-        } else if (request == 1){
-             produced[1]--;
-             
+        } else if (toConsume == 1){
+             producedLog[1]--;
         }
-
         
-
-        // Remove item
-        for (int i = 0; i < queueCount - 1; i++){
-        sharedQ[i] = sharedQ[i + 1];
-        queueCount--;
-        }
-
-        
-
-    
-   
-
     // Queue will no longer be full so producer is woken up
     if (isFull){
-        pthread_cond_signal(&condition_cond);
+        pthread_cond_signal(&cond);
     }
 
     pthread_mutex_unlock(&mutex); // Release the lock
@@ -163,7 +164,7 @@ void dequeue(){
 }
 
 void printQueue(){
-    for (int i = 0; i < queueCount - 1; i++){
+    for (int i = 0; i < queueCount + 1; i++){
         
         printf("%d", sharedQ[i]);
     }

@@ -21,8 +21,12 @@ int main(int argc, char *argv[]){
     pthread_t consumer1;
     pthread_t consumer2;
 
+    extern pthread_mutex_t mutex;
+    extern pthread_cond_t cond;
+
     extern int txZZZ;
     extern int r9ZZZ;
+    extern int totalRqsts;
     extern int seatRqsts;
     extern int ggTime;
 
@@ -35,6 +39,7 @@ int main(int argc, char *argv[]){
         switch (opt){
             case 's' : 
                 seatRqsts = atof(optarg);
+                totalRqsts = seatRqsts;
                 if (seatRqsts){
                     printf("Total number of seating requests is %d\n", seatRqsts);
                 } else{
@@ -85,15 +90,21 @@ int main(int argc, char *argv[]){
     
     }
 
+    // Initialize mutex & condition variables
+    pthread_mutex_init(&mutex, NULL);
+    pthread_cond_init(&cond, NULL);
+
     // General Producer
-    pthread_create(&producer1, NULL, Producer, &ggRequest); // VIP Greeter Robot
+    pthread_create(&producer1, NULL, Producer, &ggRequest); 
 
     // VIP Producer
-    pthread_create(&producer2, NULL, Producer, &vipRequest); // General Greeter Robot
+    pthread_create(&producer2, NULL, Producer, &vipRequest);
 
-    //usleep(1000); // Busy Waiting *PLACEHOLDER FOR SEMAPHORES*
-    //pthread_create(&consumer1, NULL, Consumer, &txID); // T-X Consumer Robot
-    //pthread_create(&consumer2, NULL, Consumer, &r9ID); // Rev-9 Consumer Robot
+    // T-X Consumer
+    pthread_create(&consumer1, NULL, Consumer, &txID);
+
+    // Rev-9 Consumer
+    pthread_create(&consumer2, NULL, Consumer, &r9ID);
     
     // General Producer join
     pthread_join(producer1, NULL);
@@ -102,10 +113,14 @@ int main(int argc, char *argv[]){
     pthread_join(producer2, NULL);
 
     // T-X Consumer join
-    // pthread_join(consumer1, NULL);
+    pthread_join(consumer1, NULL);
 
     // Rev-9 Consumer join
-    // pthread_join(consumer2, NULL);
+    pthread_join(consumer2, NULL);
+
+    // Destroy mutex & condition variables
+    pthread_mutex_destroy(&mutex);
+    pthread_cond_destroy(&cond);
     
     return 0;
 }

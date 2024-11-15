@@ -5,6 +5,7 @@
 #include "producer.h"
 #include "shared_queue.h"
 
+// Max amount of VIP requests at a time
 #define VIP_MAX 5
 
 // Produces Seating Table Requests (General or VIP)
@@ -18,7 +19,7 @@ void *Producer(void *arg){
     int extern seatRqsts;
 
     // Imma be real, idk what this counts as of now 1:22 A.M. 11/15/2024
-    int extern sharedCount;
+    // int extern sharedCount; UPDATE: Producer does not need this shit
 
     // General Request Wait Time (If Applicable)
     int extern ggTime;
