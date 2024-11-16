@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include "producer.h"
+#include "seating.h"
 #include "shared_queue.h"
 
 // Max amount of VIP requests at a time
@@ -17,7 +18,7 @@ void *Producer(void *arg){
 
     // Request type (General or VIP)
     int *dequest = (int *)arg; // cast void* to int*
-    int request = *dequest; // Dereference into int
+    RequestType request = (RequestType)*dequest; // Dereference into int
     
     // Amount of remaining seat requests
     int extern seatRqsts;
@@ -33,13 +34,13 @@ void *Producer(void *arg){
 
     int extern vipCurr;
 
-    //printf("General Producing time is: %d\n", ggTime);
-    //printf("%d\n", request);
+    // printf("General Producing time is: %d\n", ggTime);
+    // printf("%d\n", request);
     
     
     // Produce as long as there are Seating Requests left
     while (seatRqsts > 0){
-
+        // printf("Time to produce General Requests %d\n", ggTime);
         // Is it a general request?
         if (request == 0){
             // Does it take time to produce?
@@ -51,6 +52,7 @@ void *Producer(void *arg){
             }
         }
 
+        // printf("Time to produce VIP Requests %d\n", vipTime);
         // Is it a VIP request
         if (request == 1){
             // Is it able to produce?

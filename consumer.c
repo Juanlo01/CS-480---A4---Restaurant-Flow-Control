@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include "seating.h"
 #include "consumer.h"
 #include "shared_queue.h"
 #include "log.h"
@@ -16,7 +17,7 @@
 
         // Robot type (TX or R9)
         int *RID = (int *)arg; // cast void* to int*
-        int robot = *RID; // Dereference into int
+        ConsumerType robot = (ConsumerType)*RID; // Dereference into int
 
         // Keeps track of requests consumed
         int extern consumed;
@@ -39,6 +40,7 @@
 
         while (consumed < totalRqsts - 1){
             //printf("Consumed %d\n", consumed);
+            //printf("Time for tx to consume %d\n", txZZZ);
             // Is the consumer TX?
             if (robot == 0){
                 if (txZZZ > 0){
@@ -50,6 +52,7 @@
                 }
             }
 
+            //printf("Time for r9 to consume %d\n", r9ZZZ);
             // Is the consumer R9?
             if (robot == 1){
                 if (r9ZZZ > 0){

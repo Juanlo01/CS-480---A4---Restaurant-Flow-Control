@@ -29,9 +29,12 @@ int main(int argc, char *argv[]){
     extern pthread_cond_t cond;
 
     unsigned int extern consumedLog[2];
-    unsigned int extern producedLog[2]; 
+    unsigned int extern producedLog[2];
 
-    unsigned int *temp[2] = {&consumedLog[0], &consumedLog[1]};
+    unsigned int extern txConsumed[2];
+    unsigned int extern r9Consumed[2]; 
+
+    unsigned int *temp[2] = {&txConsumed[0], &r9Consumed[0]};
     unsigned int **dptr = temp; // Create a double pointer for compatibility
 
     extern int txZZZ;

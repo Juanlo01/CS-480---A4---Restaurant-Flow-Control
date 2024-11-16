@@ -8,6 +8,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <unistd.h>
+#include "seating.h"
 #include "shared_queue.h"
 #include "producer.h"
 #include "consumer.h"
@@ -24,6 +25,12 @@ unsigned int producedLog[2] = {0, 0};
 // Tracks Requests consumed
 unsigned int consumedLog[2] = {0, 0};
 
+// Requests TX consumed
+unsigned int txConsumed[2] = {0, 0};
+
+// Requests R9 consumed
+unsigned int r9Consumed[2] = {0, 0};
+
 // Tracks Requests in queue
 unsigned int inRequestQueue[2] = {0, 0};
 
@@ -39,7 +46,7 @@ int seatRqsts = 120;
 // total requests consumed
 int consumed = 0;
 
-int toConsume = 0;
+RequestType toConsume;
 
 // current count of the queue
 int queueCount = 0;
@@ -62,7 +69,7 @@ pthread_cond_t cond;
 //sem_t semaphore;
 
 // Inserts requests into queue
-void enqueue(int request){//, unsigned int produce[]){
+void enqueue (RequestType request){//, unsigned int produce[]){
     
 
     bool isEmpty = false; // Will this be the only item in the buffer?
@@ -119,7 +126,7 @@ void enqueue(int request){//, unsigned int produce[]){
 }
 
 // Removes requests from queue
-void dequeue(int consumer){
+void dequeue(ConsumerType consumer){
     bool isFull = false; // Is buffer at capacity?
     pthread_mutex_lock(&mutex); // Grab lock
     while (queueSize == 0 && consumed < totalRqsts){ // Sleep if buffer is empty, until signaled
@@ -139,7 +146,7 @@ void dequeue(int consumer){
     // }
         // Grab the request to be removed (FIFO)
 
-    toConsume = sharedQ[0];
+    toConsume = (RequestType)sharedQ[0];
 
     //printf("Queue Size: %d", queueSize);
 
@@ -161,17 +168,21 @@ void dequeue(int consumer){
         consumed++;
     }
 
-    if (toConsume == 1 && vipCurr != 0){
+    if (toConsume == 1){
         vipCurr--;
     }
     
         
+    // If TX
     if (consumer == 0){
-        consumedLog[toConsume]++;
-        inRequestQueue[toConsume]--;     
+        txConsumed[toConsume]++; // Increments Requests TX consumed
+        consumedLog[toConsume]++; // Total Requests Consumed Log
+        inRequestQueue[toConsume]--; // Updates Request Queue Log
+    // If R9  
     } else if (consumer == 1){
-        consumedLog[toConsume]++;
-        inRequestQueue[toConsume]--;
+        r9Consumed[toConsume]++; // Increments Requests R9 consumed
+        consumedLog[toConsume]++; // Total Requests Consumed Log
+        inRequestQueue[toConsume]--; // Updates Request Queue Log
     }
 
         output_request_removed(consumer, toConsume, consumedLog, inRequestQueue);

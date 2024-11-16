@@ -5,10 +5,10 @@
 # Makefile
 
 # Specify compiler
-CC = gcc -pthread -std=gnu99
+CC = g++
 
 # Compiler flags
-CFLAGS = -g3 -c 
+CFLAGS = -std=c++11 -Wall -g3 -c
 
 # Object files
 OBJS = main.o producer.o consumer.o shared_queue.o log.o
@@ -18,7 +18,7 @@ PROGRAM = dineseating
 
 # This program depends on its object files
 $(PROGRAM) : $(OBJS)
-	$(CC) -o $(PROGRAM) $(OBJS)
+	$(CC) -pthread -o $(PROGRAM) $(OBJS)
 
 main.o : main.c
 	$(CC) $(CFLAGS) main.c

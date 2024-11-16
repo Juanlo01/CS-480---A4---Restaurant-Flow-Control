@@ -8,11 +8,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "shared_queue.h"
+
 // Produces Seating Table Requests (General or VIP)
 void *Producer(void *arg);
 
 // Request type (General or VIP)
-int request;
+
 
 // Amount of remaining seat requests
 int extern seatRqsts;
