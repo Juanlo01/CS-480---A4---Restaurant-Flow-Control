@@ -58,7 +58,7 @@
                 if (r9ZZZ > 0){
                     dequeue(robot);
                     // Consume after dequeue
-                    usleep(txZZZ * 1000);
+                    usleep(r9ZZZ * 1000);
                 }else{
                     dequeue(robot);
                 }
