@@ -1,3 +1,7 @@
+// Name: Juan Cota
+// Date: 11/15/2024
+// RedID: 827272362
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

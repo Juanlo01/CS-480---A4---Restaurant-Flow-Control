@@ -1,5 +1,6 @@
 // Name: Juan Cota
-// Red ID: 827272362
+// Date: 11/15/2024
+// RedID: 827272362
 
 #ifndef SEATING_H
 #define SEATING_H

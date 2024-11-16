@@ -1,6 +1,9 @@
+// Name: Juan Cota
+// Date: 11/15/2024
+// RedID: 827272362
+
 #include <stdio.h>
 #include <time.h>
-
 #include "log.h"
 #include "seating.h"
 
