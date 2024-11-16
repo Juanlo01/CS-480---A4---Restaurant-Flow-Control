@@ -71,7 +71,7 @@ pthread_cond_t cond;
 // Inserts requests into queue
 void enqueue (RequestType request){//, unsigned int produce[]){
     
-
+    
     bool isEmpty = false; // Will this be the only item in the buffer?
 
     pthread_mutex_lock(&mutex); // Grab lock
@@ -96,22 +96,25 @@ void enqueue (RequestType request){//, unsigned int produce[]){
         // Keeps track of how many current items in queue (MAX of 18)
         queueSize++;
 
+        // Keeps track of how many seat requests left in queue
+        seatRqsts--;
+
         // Updates Log
         if (request == 0){
              producedLog[0]++;
              inRequestQueue[0]++;
+             output_request_added(request, producedLog, inRequestQueue);
         } else if (request == 1){
             // VIP Increments
             vipCurr++;
             producedLog[1]++;
             inRequestQueue[1]++;
+            output_request_added(request, producedLog, inRequestQueue);
         }
 
 
-        output_request_added(request, producedLog, inRequestQueue);
+        
 
-        // One less seating request
-        seatRqsts--;
         
         //printf("%d\n", seatRqsts); // Seat requests countdown tracker
     }
@@ -139,17 +142,14 @@ void dequeue(ConsumerType consumer){
     if (queueSize == MAX_QUEUE){
         isFull = true;
     }
-    // Keep track of VIP requests
-    // if (sharedQ[count - 1] == 1){
-    //     vipCap++; // VIP spot opened up
-    //     printf("%d", vipCap);
-    // }
-        // Grab the request to be removed (FIFO)
-
+ 
     toConsume = (RequestType)sharedQ[0];
 
-    //printf("Queue Size: %d", queueSize);
+    if (toConsume == 1){
+        vipCurr--;
+    }
 
+    //printf("Queue Size: %d", queueSize);
     //printf("Finna remove an item");
 
     // Remove item
@@ -158,7 +158,6 @@ void dequeue(ConsumerType consumer){
     }
 
     //printQueue();
-
     //printf("Removed an item fam");
 
     
@@ -168,24 +167,23 @@ void dequeue(ConsumerType consumer){
         consumed++;
     }
 
-    if (toConsume == 1){
-        vipCurr--;
-    }
     
         
     // If TX
-    if (consumer == 0){
+    if (consumer == 0 && consumed <= totalRqsts){
         txConsumed[toConsume]++; // Increments Requests TX consumed
         consumedLog[toConsume]++; // Total Requests Consumed Log
         inRequestQueue[toConsume]--; // Updates Request Queue Log
+        output_request_removed(consumer, toConsume, consumedLog, inRequestQueue);
     // If R9  
-    } else if (consumer == 1){
+    } else if (consumer == 1 && consumed <= totalRqsts){
         r9Consumed[toConsume]++; // Increments Requests R9 consumed
         consumedLog[toConsume]++; // Total Requests Consumed Log
         inRequestQueue[toConsume]--; // Updates Request Queue Log
+        output_request_removed(consumer, toConsume, consumedLog, inRequestQueue);
     }
 
-        output_request_removed(consumer, toConsume, consumedLog, inRequestQueue);
+        
         
     // Queue will no longer be full so producer is woken up
     if (isFull){

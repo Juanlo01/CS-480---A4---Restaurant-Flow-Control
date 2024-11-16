@@ -38,7 +38,7 @@
             
         //printf("Total Requests: %d\n",totalRqsts);
 
-        while (consumed < totalRqsts - 1){
+        while (consumed < totalRqsts){
             //printf("Consumed %d\n", consumed);
             //printf("Time for tx to consume %d\n", txZZZ);
             // Is the consumer TX?
@@ -46,7 +46,7 @@
                 if (txZZZ > 0){
                     dequeue(robot);
                     // Consume after dequeue
-                    usleep(txZZZ);
+                    usleep(txZZZ * 1000);
                 }else{
                     dequeue(robot);
                 }
@@ -58,7 +58,7 @@
                 if (r9ZZZ > 0){
                     dequeue(robot);
                     // Consume after dequeue
-                    usleep(txZZZ);
+                    usleep(txZZZ * 1000);
                 }else{
                     dequeue(robot);
                 }

@@ -54,50 +54,39 @@ int main(int argc, char *argv[]){
                 seatRqsts = atof(optarg);
                 totalRqsts = seatRqsts;
                 if (seatRqsts){
-                    printf("Total number of seating requests is %d\n", seatRqsts);
                 } else{
-                    printf("Invalid argument\n");
-                    return BADEXIT;
+                    seatRqsts = 0;
                 }
             break;
             case 'x' : 
                 txZZZ = atof(optarg);
                 if (txZZZ){
-                    printf("T-X robot will sleep for %d milliseconds\n", txZZZ);
                 } else{
-                    printf("Invalid argument\n");
-                    return BADEXIT;
+                    txZZZ = 0;
                 }
             break;
             case 'r' : 
                 r9ZZZ = atof(optarg);
                 if (r9ZZZ){
-                    printf("Rev-9 robot will sleep for %d milliseconds\n", r9ZZZ);
                 } else{
-                    printf("Invalid argument\n");
-                    return BADEXIT;
+                    r9ZZZ = 0;
                 }
             break;
             case 'g' : 
                 ggTime = atof(optarg);
                 if (ggTime){
-                    printf("Average time general greeter robots will produce and insert general table requests is %d\n", ggTime);
                 } else{
-                    printf("Invalid argument\n");
-                    return BADEXIT;
+                    ggTime = 0;
                 }
             break;
             case 'v' : 
                 vipTime = atof(optarg);
                 if (vipTime){
-                    printf("Average time VIP room greeter robots will produce and insert VIP room requests is %d\n", vipTime);
                 } else{
-                    printf("Invalid argument\n");
-                    return BADEXIT;
+                    vipTime = 0;
                 }
             break;
             default:
-                printf("default\n");
             break;
         }
     
