@@ -27,6 +27,8 @@ void *Producer(void *arg){
     // VIP Request Wait Time (If Applicable)
     int extern vipTime;
 
+    int extern vipCurr;
+
     //printf("General Producing time is: %d\n", ggTime);
     //printf("%d\n", request);
     
@@ -47,12 +49,15 @@ void *Producer(void *arg){
 
         // Is it a VIP request
         if (request == 1){
-            // Does it take time to produce?
-            if (vipTime > 0){
-                usleep(vipTime);
-                enqueue(request);
-            } else{
-                enqueue(request);
+            // Is it able to produce?
+            if (vipCurr < VIP_MAX){
+                // Does it take time to produce?
+                if (vipTime > 0){
+                    usleep(vipTime);
+                    enqueue(request);
+                } else{
+                    enqueue(request);
+                }
             }
         }
     }

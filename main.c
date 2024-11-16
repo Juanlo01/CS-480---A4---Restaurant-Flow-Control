@@ -24,6 +24,12 @@ int main(int argc, char *argv[]){
     extern pthread_mutex_t mutex;
     extern pthread_cond_t cond;
 
+    unsigned int extern consumedLog[2];
+    unsigned int extern producedLog[2]; 
+
+    unsigned int *temp[2] = {&consumedLog[0], &consumedLog[1]};
+    unsigned int **dptr = temp; // Create a double pointer for compatibility
+
     extern int txZZZ;
     extern int r9ZZZ;
     extern int totalRqsts;
@@ -117,6 +123,9 @@ int main(int argc, char *argv[]){
 
     // Rev-9 Consumer join
     pthread_join(consumer2, NULL);
+
+    // Outputs Request Report
+    output_production_history(producedLog, dptr);
 
     // Destroy mutex & condition variables
     pthread_mutex_destroy(&mutex);

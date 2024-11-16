@@ -9,11 +9,6 @@
 
     // Consumes Seating Table Requests (General and VIP)
     void *Consumer(void *arg){
-        unsigned int extern consumedLog[2];
-        unsigned int extern producedLog[2]; 
-
-        unsigned int *temp[2] = {&consumedLog[0], &consumedLog[1]};
-        unsigned int **dptr = temp; // Create a double pointer for compatibility
 
         // Robot type (TX or R9)
         int *RID = (int *)arg; // cast void* to int*
@@ -30,13 +25,15 @@
 
         // Amount of time it takes tx to consume (After dequeueing)
         int extern txZZZ;
+
+        int reportCounter = 0;
         
         
         //printf("TX sleep time is: %d\n", txZZZ);
             
         //printf("Total Requests: %d\n",totalRqsts);
 
-        while (consumed < totalRqsts){
+        while (consumed < totalRqsts - 1){
             //printf("Consumed %d\n", consumed);
             // Is the consumer TX?
             if (robot == 0){
@@ -61,20 +58,20 @@
             }
         }
 
-            
-                
+        
+
         // Lets us know a consumer thread is completed
 
         // TX thread is done
         if (robot == 0){
             //printf("T-X Consumer Thread is finished\n");
-            output_production_history(producedLog, dptr);
-            pthread_exit(0);
+            reportCounter++;
+                pthread_exit(0);
         }
 
         // R9 thread is done
         if (robot == 1){
-            //printf("Rev-9 Consumer Thread is finished\n");
+            //printf("Rev-9 Consumer Thread is finished\n"
             pthread_exit(0);
         }
     }

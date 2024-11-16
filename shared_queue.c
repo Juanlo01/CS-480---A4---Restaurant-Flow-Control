@@ -45,7 +45,7 @@ int r9ZZZ = 0; // time r9 sleeps
 int ggTime = 0; // time general table requests take
 int vipTime = 0; // time vip table requests take
 
-unsigned int extern vipCount; // # of vip requests in queue
+unsigned int vipCurr = 0; // # of vip requests in queue
 
 //unsigned int produced[seatRqsts];
 
@@ -90,8 +90,10 @@ void enqueue(int request){//, unsigned int produce[]){
              producedLog[0]++;
              inRequestQueue[0]++;
         } else if (request == 1){
-             producedLog[1]++;
-             inRequestQueue[1]++;
+            // VIP Increments
+            vipCurr++;
+            producedLog[1]++;
+            inRequestQueue[1]++;
         }
 
 
@@ -154,16 +156,19 @@ void dequeue(int consumer){
         queueCount--;
         consumed++;
     }
+
+    if (toConsume == 1 && vipCurr != 0){
+        vipCurr--;
+    }
     
         
-        if (toConsume == 0){
-            consumedLog[0]++;
-            inRequestQueue[0]--;
-             
-        } else if (toConsume == 1){
-            consumedLog[1]++;
-             inRequestQueue[1]--;
-        }
+    if (consumer == 0){
+        consumedLog[toConsume]++;
+        inRequestQueue[toConsume]--;     
+    } else if (consumer == 1){
+        consumedLog[toConsume]++;
+        inRequestQueue[toConsume]--;
+    }
 
         output_request_removed(consumer, toConsume, consumedLog, inRequestQueue);
         
